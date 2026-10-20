@@ -4,8 +4,13 @@ An agent that recovers ReDU-compliant sample metadata for public mass-spectromet
 **Uses GNPS tool calling using Python; and the model is consulted only when the controlled regex judgement is required**, and every
 decision is logged with who made it.
 
-See [`SPEC.md`](SPEC.md) for the project brief. Implementation notes:
-[`metadata_agent/README.md`](metadata_agent/README.md).
+See [`SPEC.md`](SPEC.md) for the project brief and [`skill/SKILL.md`](skill/SKILL.md) for the
+procedure the agent implements. Implementation notes: [`metadata_agent/README.md`](metadata_agent/README.md).
+
+`skill/SKILL.md` is the written-down version of the judgement: what counts as an acquisition, when
+to abstain, which gates must pass before a literature search, and a closing section recording what
+each analysed deposit changed in the procedure. The agent is that document made executable, so the
+two are meant to be read together and revised together.
 
 ```bash
 python -m metadata_agent MSV000102356 --out runs/MSV000102356 --engine auto --summary runs/summary.csv
