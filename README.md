@@ -38,14 +38,34 @@ chosen over the **whole** vocabulary with no coded shortlisting, because keyword
 exactly where it matters (for a human stool deposit, "resuspension in 50:50 MeOH:water" ranks
 `water_ground` first).
 
-## Tools, against the spec
+## Tools
 
-| SPEC tool | status |
-|---|---|
-| USI validator | `core.UsiResolver` — resolves a USI and probes scans for MS/MS; `indexed` column reports GNPS2 parse state |
-| Ontology lookup | `core.OLS4` — EBI OLS4 for UBERON terms and NCBITaxon lineage with TAXRANK-decoded ranks |
-| MASST | not implemented |
-| Repository access | MassIVE (PROXI + GNPS2 dataset cache). MetaboLights and Metabolomics Workbench need their own adapters |
+### External services
+
+| tool | in | out | code |
+|---|---|---|---|
+| Repository record (MassIVE PROXI) | accession | title, summary, keywords, species, instrument, publication status, `DatasetType` | `core.MassIVE.proxi` |
+| File listing (GNPS2 cache `filename`) | accession | every file path, size, collection, create time | `core.DatasetCache.filenames` |
+| Spectrum summary (GNPS2 cache `uniquemri`) | accession | MS1/MS2 counts, analyzer, ionization, DDA/DIA class | `core.DatasetCache.uniquemri` |
+| File fetch (ProteoSAFe, HTTP Range) | accession + path | first ~70 KB: instrument, serial, polarity, timestamp; or a submitter table | `core.MassIVE.fetch_bytes` |
+| USI validator (GNPS2 resolver) | USI | resolves y/n, peaks, precursor m/z and charge per scan | `core.UsiResolver.probe` |
+| Ontology lookup (EBI OLS4) | label or taxid | `UBERON:0001988`; NCBI lineage with TAXRANK-decoded ranks | `core.OLS4` |
+| ReDU schema + vocabulary | column name | live 57-column schema; allowed terms per column | `core.ReDU`, `analysis.ReduCV` |
+| MASST | USI | hits table | **not implemented** |
+
+Repositories: MassIVE only. MetaboLights and Metabolomics Workbench are in scope for the task but
+still need their own adapters.
+
+### Internal tools (deterministic, no model)
+
+| tool | what it decides | code |
+|---|---|---|
+| Format census and scope | which files are acquisitions: strips wrappers, drops index sidecars, collapses vendor directories, dedupes one injection published as `mzML`+`raw` | `core.acquisitions` |
+| Grammar scorer | whether a proposed regex holds: coverage overall and per subtree, field cardinality; rejects below 95% | `analysis.score_grammar` |
+| Join tester | whether a submitter table really joins: normalization ladder, >=80% matched, <=1.05 rows per file | `analysis.test_join` |
+| CV validator | whether a term exists in ReDU's vocabulary; refuses anything else | `analysis.ReduCV.validate` |
+| Assay classifier | metabolomics vs proteomics, before any file work | `core.classify_assay` |
+| Decision engine | carries the five judgement calls to a model and validates the reply | `engine.py` |
 
 ## Assay gate
 
