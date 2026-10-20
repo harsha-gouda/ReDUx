@@ -1,7 +1,7 @@
 # ReDUx
 
 An agent that recovers ReDU-compliant sample metadata for public mass-spectrometry deposits.
-**Python calls every tool; the model is consulted only where judgement is required**, and every
+**Uses GNPS tool calling using Python; and the model is consulted only when the controlled regex judgement is required**, and every
 decision is logged with who made it.
 
 See [`SPEC.md`](SPEC.md) for the project brief. Implementation notes:
